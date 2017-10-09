@@ -4,7 +4,7 @@
   "description": "",
   "main": "phantom.js",
   "scripts": {
-    "start": "./node_modules/.bin/phantomjs ./phantom.js"
+    "start": "node ./native.js"
   },
   "author": "Yury",
   "license": "ISC",
@@ -13,6 +13,7 @@
     "cheerio": "^1.0.0-rc.2",
     "phantomjs": "^2.1.7",
     "request": "^2.83.0",
-    "request-cookies": "^1.1.0"
+    "request-cookies": "^1.1.0",
+    "socks5-http-client": "^1.0.2"
   }
 }

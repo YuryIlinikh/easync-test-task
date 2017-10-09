@@ -1,6 +1,16 @@
-let request = require('request');
+const request = require('request');
 const async = require('async');
 const cheerio = require('cheerio')
+// const Agent = require('socks5-http-client/lib/Agent');
+const proxyOpts = {
+    // agentClass: Agent,
+    // agentOptions: {
+    //     socksHost: '127.0.0.1', // Defaults to 'localhost'.
+    //     socksPort: 8888 // Defaults to 1080.
+    // }
+    proxy: 'http://127.0.0.1:8888',
+    strictSSL: false
+}
 
 /**
  * прасим логин/пароль
@@ -31,13 +41,15 @@ function parseInput() {
  * первый запрос, чтоб достать все нужные поля формы
  */
 function makeFirstReq(jar, headers, cb) {
-    request({
+    let opts = Object.assign({
         'gzip': true,
         'method': 'GET',
         'url': 'https://www.topcashback.co.uk/logon',
         'headers': headers,
         'jar': jar
-    }, function (err, res, body) {
+    }, proxyOpts);
+
+    request(opts, function (err, res, body) {
         if (err) {
             return cb(err);
         }
@@ -60,6 +72,7 @@ function parseGetRespToPostData(body, args) {
     }
     postData['ctl00$GeckoOneColPrimary$Login$txtEmail'] = args.login;
     postData['ctl00$GeckoOneColPrimary$Login$txtPassword'] = args.password;
+    postData["ctl00$GeckoOneColPrimary$Login$Loginbtn"] = 'Login';
     // postData['ctl00$GeckoOneColPrimary$Login$deviceFingerprintControl$deviceFingerprintField'] = '4155893347';
 
     return postData;
@@ -71,7 +84,7 @@ function parseGetRespToPostData(body, args) {
  * @param headers
  */
 function makeLoginReq(postData, jar, headers, cb) {
-    request({
+    let opts = Object.assign({
         'gzip': true,
         'method': 'POST',
         url: 'https://www.topcashback.co.uk/logon',
@@ -80,17 +93,23 @@ function makeLoginReq(postData, jar, headers, cb) {
         form: postData,
         jar: jar
         // 'headers': headers
-    }, function (err, res, body) { /* ... */
+    }, proxyOpts);
+
+    request(opts, function (err, res, body) { /* ... */
         if (err) {
             return cb(err);
         }
-        const $ = cheerio.load(body);
-        let errEl = $('.gecko-login-error');
-        if (errEl) {
-            errEl = errEl.text();
+        if (res.statusCode == 302
+            && res.headers.location == 'https://www.topcashback.co.uk/account/overview/') {
+            return cb(null, true);
+        } else {
+            const $ = cheerio.load(body);
+            let errEl = $('.gecko-login-error');
+            if (errEl) {
+                errEl = errEl.text();
+            }
+            cb(errEl, false);
         }
-        let authorized = !!$('#ctl00_ctl22_hypAccount').length;
-        cb(errEl, authorized);
     });
 }
 
