@@ -1,15 +1,9 @@
 const request = require('request');
 const async = require('async');
 const cheerio = require('cheerio')
-// const Agent = require('socks5-http-client/lib/Agent');
 const proxyOpts = {
-    // agentClass: Agent,
-    // agentOptions: {
-    //     socksHost: '127.0.0.1', // Defaults to 'localhost'.
-    //     socksPort: 8888 // Defaults to 1080.
-    // }
-    proxy: 'http://127.0.0.1:8888',
-    strictSSL: false
+    // proxy: 'http://127.0.0.1:8888',
+    // strictSSL: false
 }
 
 /**
