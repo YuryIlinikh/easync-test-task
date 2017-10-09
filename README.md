@@ -4,7 +4,7 @@
 1. cd ./easync-test-task
 2. npm install
 
-Пытался сделать его 2мя способами:
+Сделал 2мя способами:
 
 1. Рабочий вариант, сделан с помощью библиотек request и cheerio.
 Запуск: npm start '{"login":"yuryilinikh@gmail.com", "password": "qwertyui"}'
