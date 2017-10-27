@@ -108,7 +108,6 @@ function makeLoginReq(postData, jar, headers, cb) {
     });
 }
 
-
 function app() {
     let args = null;
     try {
